@@ -7,24 +7,29 @@ const port = 3000;
 
 // 1. **การตั้งค่า Static File Serving (จำเป็น!)**
 // สั่งให้ Express สามารถเข้าถึงไฟล์ HTML, CSS, JS, Images ทั้งหมดได้
-app.use(express.static(path.join(__dirname, '..')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use(cors());
 app.use(express.json());
 
+// LOGIN
 app.get('/auth/login', (req, res) => {
-    // ใช้วิธีนี้เมื่อคุณต้องการให้เมื่อเข้าถึง /login แล้วส่งไฟล์ login.html ให้
-    // (ไฟล์ต้องอยู่ในโฟลเดอร์ที่ตั้งค่า express.static ไว้)
-    res.sendFile('login.html', { root: path.join(__dirname, '..') });
+    res.sendFile(path.join(__dirname, '..', 'public', 'templates', 'login.html'));
 });
 
-// Route สำหรับ URL /register
+// REGISTER
 app.get('/auth/register', (req, res) => {
-    res.sendFile('register.html', { root: path.join(__dirname, '..') });
+    res.sendFile(path.join(__dirname, '..', 'public', 'templates', 'register.html'));
 });
 
+// RECOVERY
 app.get('/recovery', (req, res) => {
-    res.sendFile('recovery.html', { root: path.join(__dirname, '..') });
+    res.sendFile(path.join(__dirname, '..', 'public', 'templates', 'recovery.html'));
+});
+
+// HOME (optional)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'templates', 'index.html'));
 });
 
 // *** POST Route สำหรับ Login API (ของเดิม) ***
