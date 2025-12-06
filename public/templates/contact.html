@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>kmnrch - Contact</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        /* --- CSS Reset & Global Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: 0.3s;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* --- 3D Background Canvas --- */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+        }
+
+        /* --- Header / Navbar (Glassmorphism) --- */
+        .site-header {
+            width: 100%;
+            padding: 15px 40px;
+            position: fixed;
+            top: 0;
+            z-index: 100;
+
+            /* Glass Style */
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 40px;
+            filter: brightness(1.2);
+        }
+
+        /* Nav Center Links */
+        .nav-center {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #4facfe;
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.6);
+        }
+
+        /* Active Link Style (สำหรับหน้าปัจจุบัน) */
+        .nav-link.active {
+            color: #4facfe;
+            border-bottom: 2px solid #4facfe;
+            padding-bottom: 5px;
+        }
+
+        /* Login Button (Neon Gradient) */
+        .btn-login {
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(45deg, #00f2fe, #4facfe, #f093fb, #f5576c);
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.6);
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Mobile Toggle */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hamb {
+            display: block;
+            width: 30px;
+            height: 3px;
+            background: #fff;
+            position: relative;
+        }
+
+        .hamb::before,
+        .hamb::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            left: 0;
+            transition: 0.3s;
+        }
+
+        .hamb::before {
+            top: -8px;
+        }
+
+        .hamb::after {
+            top: 8px;
+        }
+
+        /* --- Chat Icon --- */
+        .fixed-chat-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #4facfe;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .fixed-chat-icon:hover {
+            background: #4facfe;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.8);
+        }
+
+        /* --- Main Content (Contact Page Specific) --- */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 100px;
+            padding-bottom: 60px;
+            padding-left: 20px;
+            padding-right: 20px;
+            text-align: center;
+        }
+
+        .contact-container {
+            max-width: 600px;
+            width: 100%;
+            /* ทำให้โปร่งใสเพื่อโชว์ 3D Background */
+            padding: 50px 30px;
+        }
+
+        .contact-container h1 {
+            font-size: 3rem;
+            background: linear-gradient(to right, #00f2fe, #4facfe, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+        }
+
+        .contact-container h2 {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+            font-weight: 300;
+            font-size: 1.2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .social-links a {
+            font-size: 40px;
+            color: rgba(255, 255, 255, 0.8);
+            /* สีไอคอนตามภาพตัวอย่าง */
+            transition: 0.3s;
+        }
+
+        .social-links a:hover {
+            color: #4facfe;
+            text-shadow: 0 0 20px #4facfe;
+            transform: scale(1.15);
+        }
+
+        /* --- Footer (Glassmorphism) --- */
+        .site-footer {
+            margin-top: auto;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 60px 20px 20px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-top {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 60px;
+        }
+
+        .link-column h4 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .link-column h4::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 30px;
+            height: 2px;
+            background: #4facfe;
+        }
+
+        .link-column ul li {
+            margin-bottom: 12px;
+        }
+
+        .link-column ul li a:hover {
+            color: #ffffff;
+        }
+
+        .footer-divider {
+            max-width: 1200px;
+            margin: 40px auto;
+            border: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 0.9rem;
+        }
+
+        .footer-policy a {
+            margin-right: 20px;
+        }
+
+        .footer-policy a:hover {
+            color: #fff;
+        }
+
+        .footer-social {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer-social a:hover {
+            color: #4facfe;
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        .footer-logo-img {
+            height: 50px;
+            filter: brightness(1.2);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+                z-index: 101;
+            }
+
+            .nav-center {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 70%;
+                background: rgba(10, 10, 10, 0.95);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: 0.4s;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-center.open {
+                right: 0;
+            }
+
+            .nav-right {
+                display: none;
+            }
+
+            .footer-top {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+                gap: 40px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+            }
+
+            .contact-container {
+                padding: 40px 20px;
+            }
+
+            .social-links {
+                gap: 25px;
+            }
+
+            .social-links a {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="canvas-container"></div>
+
+    <header class="site-header">
+        <nav class="nav">
+            <div class="nav-left">
+                <a href="/" class="logo-link" aria-label="หน้าแรก">
+                    <img src="/images/logo.png" alt="kmnrch" class="logo" />
+                </a>
+            </div>
+
+            <ul class="nav-center" role="menubar" aria-label="เมนูหลัก">
+                <li role="none"><a role="menuitem" href="/" class="nav-link">Home</a></li>
+                <li role="none"><a role="menuitem" href="/about" class="nav-link active">About</a></li>
+                <li role="none"><a role="menuitem" href="/services" class="nav-link">Services</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <a href="/auth/login" class="btn btn-login">Login</a>
+            </div>
+
+            <button class="nav-toggle" aria-label="เปิดเมนู" aria-expanded="false">
+                <span class="hamb"></span>
+            </button>
+        </nav>
+    </header>
+
+    <main>
+        <div class="contact-container">
+            <h1>GET IN TOUCH</h1>
+            <h2>Connect with kmnrch through our official channels.</h2>
+
+            <div class="social-links">
+                <a href="https://x.com/kmnrch" aria-label="X (Twitter)"><i class='fa-brands fa-x-twitter'></i></a>
+                <a href="https://www.facebook.com/kmnrch" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.youtube.com/@kmnrch" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.tiktok.com/@kmnrch" aria-label="TikTok"><i class="fab fa-tiktok'></i></a>
+      </div>
+    </div>
+  </main>
+
+  <a href=" https://www.facebook.com/kmnrch" class="fixed-chat-icon" aria-label="แชทกับเรา">
+                        <i class="fas fa-comment-dots"></i>
+                </a>
+
+                <script>
+                    // Script สำหรับ Toggle Menu (Mobile)
+                    const toggle = document.querySelector('.nav-toggle');
+                    const center = document.querySelector('.nav-center');
+                    toggle.addEventListener('click', () => {
+                        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+                        toggle.setAttribute('aria-expanded', String(!expanded));
+                        center.classList.toggle('open');
+                    });
+                </script>
+
+                <script>
+                    // Script สำหรับ 3D Background
+                    const scene = new THREE.Scene();
+                    scene.fog = new THREE.FogExp2(0x000000, 0.0015);
+
+                    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    renderer.setPixelRatio(window.devicePixelRatio);
+                    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+                    const geometry = new THREE.IcosahedronGeometry(12, 0);
+
+                    const material = new THREE.MeshPhysicalMaterial({
+                        color: 0x111111, metalness: 0.8, roughness: 0.2, reflectivity: 1,
+                        clearcoat: 1.0, clearcoatRoughness: 0.1, emissive: 0x001133, emissiveIntensity: 0.3,
+                        wireframe: true
+                    });
+
+                    const shape = new THREE.Mesh(geometry, material);
+                    scene.add(shape);
+
+                    const frontLight = new THREE.PointLight(0xffffff, 1, 100);
+                    frontLight.position.set(0, 10, 20);
+                    scene.add(frontLight);
+
+                    const light1 = new THREE.PointLight(0x0088ff, 2, 50); scene.add(light1);
+                    const light2 = new THREE.PointLight(0xff0088, 2, 50); scene.add(light2);
+
+                    camera.position.z = 30;
+
+                    let time = 0;
+                    const animate = function () {
+                        requestAnimationFrame(animate);
+                        time += 0.005;
+
+                        shape.rotation.x += 0.001;
+                        shape.rotation.y += 0.002;
+
+                        light1.position.x = Math.sin(time * 0.7) * 25;
+                        light1.position.y = Math.cos(time * 0.5) * 20;
+
+                        light2.position.x = Math.cos(time * 0.3) * 25;
+                        light2.position.y = Math.sin(time * 0.5) * 25;
+
+                        renderer.render(scene, camera);
+                    };
+
+                    window.addEventListener('resize', () => {
+                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(window.innerWidth, window.innerHeight);
+                    }, false);
+                    animate();
+                </script>
+</body>
+
+</html>

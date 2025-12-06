@@ -8,6 +8,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// CONTACT
+app.get('/contact', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public/templates/contact.html'));
+});
+
 // LOGIN
 app.get('/auth/login', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public/templates/login.html'));
