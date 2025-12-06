@@ -57,3 +57,9 @@ app.get('/api/lang/:langCode', (req, res) => {
 
 // ❗ สำคัญมาก — ต้องส่งกลับเป็น handler เพื่อใช้กับ Serverless
 module.exports = app;
+
+const PORT = 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
